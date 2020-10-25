@@ -37,6 +37,9 @@ static int cmd_q(char *args) {
 }
 
 static int cmd_help(char *args);
+static int cmd_si(char *args);
+static int cmd_info(char *args);
+static void cmd_err(int err_type,const char *command);
 
 static struct {
   char *name;
@@ -47,6 +50,11 @@ static struct {
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
 
+  /*PA1.3*/
+  { "si", "Usage: si [N]\n Execute the program with N(default: 1) step", cmd_si},
+  { "info", "Usage: info [rw]\n"\
+  "info r: print the values of all registers\n"\
+  "info w: show information about watchpoint", cmd_info}
   /* TODO: Add more commands */
 
 };
@@ -74,6 +82,54 @@ static int cmd_help(char *args) {
     printf("Unknown command '%s'\n", arg);
   }
   return 0;
+}
+
+/* PA1.3 */
+
+static void cmd_err(int err_type,const char *command){
+    switch(err_type){
+        case 0:
+            printf("Invalid arguments for command '%s'\n",command);
+            break;
+        case 1:
+            printf("Lack arguments for command '%s'\n",command);
+            break;
+        default:
+            printf("Unknown error\n");
+            break;
+    }
+}
+
+static int cmd_si(char *args) {
+    /* extract the first argument */
+    char *arg = strtok(NULL, " ");
+    if (arg == NULL) {
+        /* no argument given */
+        cpu_exec(1);
+    }
+    else {
+        int n = atoi(arg);
+        if(n>0)
+            cpu_exec(n);
+        else
+            cmd_err(0, "si:N<=0");
+    }
+    return 0;
+}
+
+static int cmd_info(char *args) {
+    /* extract the first argument */
+    char *arg = strtok(NULL, " ");
+    if (arg == NULL) {
+        /* no argument given */
+        cmd_err(0, "info: no argument given");
+    }
+    else{
+        if(*arg == 'r') isa_reg_display();
+        else if(*arg == 'w') wp_display();
+        else cmd_err(0, "info: unknown argument");
+    }
+    return 0;
 }
 
 void ui_mainloop(int is_batch_mode) {
