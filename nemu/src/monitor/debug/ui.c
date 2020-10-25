@@ -121,17 +121,8 @@ static int cmd_si(char *args) {
 
 static int cmd_info(char *args) {
     /* extract the first argument */
-    char *arg = strtok(NULL, " ");
-    if (arg == NULL) {
-        /* no argument given */
-        cmd_err(0, "info: no argument given");
-    }
-    else{
-        if(*arg == 'r') isa_reg_display();
-        else if(*arg == 'w') wp_display();
-        else cmd_err(0, "info: unknown argument");
-    }
-    return 0;
+
+    
 }
 
 void ui_mainloop(int is_batch_mode) {
