@@ -39,9 +39,11 @@ static int cmd_q(char *args) {
 }
 
 static int cmd_help(char *args);
+static void cmd_err(int err_type,const char *command);
 static int cmd_si(char *args);
 static int cmd_info(char *args);
-static void cmd_err(int err_type,const char *command);
+static int cmd_x(char *args);
+
 
 static struct {
   char *name;
@@ -52,11 +54,14 @@ static struct {
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
 
-  /*PA1.3*/
+  /*PA1.1*/
   { "si", "Usage: si [N]\n Execute the program with N(default: 1) step", cmd_si},
   { "info", "Usage: info [rw]\n"\
   "info r: print the values of all registers\n"\
-  "info w: show information about watchpoint", cmd_info}
+  "info w: show information about watchpoint", cmd_info},
+  { "x", "Usage: x [N] [EXPR]\n" \
+	"print N consecutive 4 bytes starting from address calculated from EXPR", cmd_x },
+
   /* TODO: Add more commands */
 
 };
@@ -86,7 +91,7 @@ static int cmd_help(char *args) {
   return 0;
 }
 
-/* PA1.3 */
+/* PA1.1 */
 
 static void cmd_err(int err_type,const char *command){
     switch(err_type){
@@ -135,6 +140,40 @@ static int cmd_info(char *args) {
     return 0;
 
 }
+
+static int cmd_x(char *args) {
+    /* extract the first argument */
+
+    char *arg1 = strtok(NULL, " ");
+    char *arg2 = strtok(NULL, " ");
+    if (arg1 == NULL || arg2 == NULL) {
+        /* no argument given */
+        cmd_err(1, "x");
+    }
+    else{
+        int n = atoi(arg1);
+        if (n<=0){
+            cmd_err(0, "x:N<=0");
+        }
+        else{
+            int addr;
+            sscanf(arg2,"%x",&addr);
+            for(int i=0;i<n;i++,addr+=4){
+                uint32_t data;
+                data = vaddr_read(addr,4);
+                if((i & 0x3) == 0)
+                    printf("0x%08x: ",addr);
+                printf("0x%08x\t", data);
+                if((i & 0x3) == 0x3)
+                    printf("\n");
+            }
+            printf("\n");
+        }
+    }
+    return 0;
+
+}
+
 
 void ui_mainloop(int is_batch_mode) {
   if (is_batch_mode) {
