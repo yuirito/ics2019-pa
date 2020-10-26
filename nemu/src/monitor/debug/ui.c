@@ -129,7 +129,8 @@ static int cmd_info(char *args) {
     }
     else{
         if(*arg == 'r') isa_reg_display();
-        
+        //else if(*arg == 'w') wp_display();
+        //else cmd_err(0, "info: unknown argument");
     }
     return 0;
 
