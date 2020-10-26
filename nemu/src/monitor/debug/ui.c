@@ -163,7 +163,7 @@ static int cmd_x(char *args) {
                 data = vaddr_read(addr,4);
                 if((i & 0x3) == 0)
                     printf("0x%08x: ",addr);
-                printf("0x%08x\t", data);
+                printf("0x%08x%*s", data,4,"");
                 if((i & 0x3) == 0x3)
                     printf("\n");
             }
