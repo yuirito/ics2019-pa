@@ -290,7 +290,7 @@ uint32_t eval(int p, int q, bool *success)
 			val = vaddr_read(val2, 4);
 			break;	
 		default:
-			printf("Unknown token type: %d\n", tokens[pos].type);
+			printf("Unknown token type %d: %d\n",pos, tokens[pos].type);
 			return *success = false;
 	}
 
