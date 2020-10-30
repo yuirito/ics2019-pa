@@ -43,6 +43,7 @@ static void cmd_err(int err_type,const char *command);
 static int cmd_si(char *args);
 static int cmd_info(char *args);
 static int cmd_x(char *args);
+static int cmd_p(char *args);
 
 
 static struct {
@@ -61,6 +62,7 @@ static struct {
   "info w: show information about watchpoint", cmd_info},
   { "x", "Usage: x [N] [EXPR]\n" \
 	"print N consecutive 4 bytes starting from address calculated from EXPR", cmd_x },
+  { "p", "Usage: p EXPR\nPrint the value of expression", cmd_p},
 
   /* TODO: Add more commands */
 
@@ -130,7 +132,7 @@ static int cmd_info(char *args) {
     char *arg = strtok(NULL, " ");
     if (arg == NULL) {
         /* no argument given */
-        cmd_err(0, "info: no argument given");
+        cmd_err(0, "info: no argument given\n");
     }
     else{
         if(*arg == 'r') isa_reg_display();
@@ -173,6 +175,26 @@ static int cmd_x(char *args) {
     return 0;
 
 }
+
+static int cmd_p(char *args) {
+    /* extract the first argument */
+
+    char *arg = strtok(NULL, " ");
+    if (arg == NULL) {
+        /* no argument given */
+        cmd_err(0, "p: no argument given\n");
+    }
+    else{
+        bool success = true;
+        uint32_t result = expr(arg,&success);
+        if(success) printf("0x%x(%d)\n",result,result);
+        else printf("Invalid expr\n");
+
+    }
+    return 0;
+
+}
+
 
 
 void ui_mainloop(int is_batch_mode) {
