@@ -47,10 +47,11 @@ static struct rule {
   {"-", TK_SUB, 4},		// substract
   {"\\*", TK_MUL, 5},		// multiply or derefrence
   {"/", TK_DIV, 5},		// divide
-  {"\\$[a-zA-Z]{2,3}", TK_REG,0}, //register
+  
   {"0[Xx][0-9a-fA-F]+", TK_HEX, 0},	// hex (must before the TK_NUM)
   {"[0-9]+", TK_NUM, 0},	// number(dec)
   {"\\(", TK_LBR, 7},		// left bracket
+  {"\\$[a-zA-Z]{2,3}", TK_REG,0}, //register
   {"\\)", TK_RBR, 7},		// right bracket
   
   
