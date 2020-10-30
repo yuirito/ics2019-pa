@@ -51,7 +51,8 @@ static struct rule {
   {"[0-9]+", TK_NUM, 0},	// number(dec)
   {"\\(", TK_LBR, 7},		// left bracket
   {"\\)", TK_RBR, 7},		// right bracket
-  {"\\$[a-zA-Z]{2,3}", TK_REG, 0}, //register
+  {"\\$[a-zA-Z]+}", TK_REG, 0},			// register
+  
   {"&&", TK_AND, 2},		// and
   {"\\|\\|", TK_OR, 1}		// or
 };
