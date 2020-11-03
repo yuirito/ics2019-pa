@@ -16,7 +16,7 @@ enum {
 
   /* PA1.2*/
   TK_NUM, TK_PLUS, TK_SUB, TK_MUL, TK_DIV,
-  TK_LBR, TK_RBR, TK_HEX, TK_REG, TK_AND, TK_OR, TK_DEREF
+  TK_LBR, TK_RBR, TK_HEX, TK_REG, TK_AND, TK_OR, TK_DEREF, TK_NEGTIVE
 };
 
 /* PA1.2 */
@@ -42,7 +42,7 @@ static struct rule {
   /* rule,symbole,priority */
 
   {" +", TK_NOTYPE, 0},    // spaces
-  {"\\+", '+', 4},         // plus
+  {"\\+", TK_PLUS, 4},         // plus
   {"==", TK_EQ, 3},         // equal
   {"-", TK_SUB, 4},		// substract
   {"\\*", TK_MUL, 5},		// multiply or derefrence
@@ -83,7 +83,7 @@ typedef struct token {
   int priority; //add priority
 } Token;
 
-static Token tokens[32] __attribute__((used)) = {};
+static Token tokens[65536] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
 static bool make_token(char *e) {
@@ -126,7 +126,6 @@ static bool make_token(char *e) {
                 tokens[nr_token].type = rules[i].token_type;
                 tokens[nr_token].priority = rules[i].priority;
 				        nr_token++;
-				        break;
         }
 
         break;
@@ -153,6 +152,10 @@ uint32_t expr(char *e, bool *success) {
   for(int i=0; i<nr_token; i++){
     if(tokens[i].type == TK_MUL && (i==0 || (tokens[i-1].priority!=0 && tokens[i-1].type!=TK_RBR))){
        tokens[i].type = TK_DEREF;
+       tokens[i].priority = 6;
+    }
+    else if (tokens[i].type == TK_SUB && (i==0 || (tokens[i-1].priority!=0 && tokens[i-1].type!=TK_RBR))){
+       tokens[i].type = TK_NEGTIVE;
        tokens[i].priority = 6;
     }
   }
@@ -197,9 +200,9 @@ int check_parentheses(int p, int q)
 int get_main_op(int p, int q)
 {
 	int inBracket = 0, i, pos = -1, priority=7;
-	for(i = p; i <= q; ++ i) {
+	for(i = p; i <= q; i++) {
 		int type = tokens[i].type;
-		if( !inBracket && tokens[i].priority>0){
+		if( !inBracket && tokens[i].priority>0&&tokens[i].priority<7){
 			if(tokens[i].priority<=priority ){
         pos = i;
         priority = tokens[i].priority;
@@ -232,11 +235,11 @@ uint32_t eval(int p, int q, bool *success)
     *success = false;
 		return -1;
 	}
-
 	int ret = check_parentheses(p, q);
 	if(ret == -1) {
     *success = false;
 		Log("check_parentheses return -1");
+    
     return -1;
 	}
 	
@@ -249,9 +252,8 @@ uint32_t eval(int p, int q, bool *success)
     *success = false;
 		return -1;
 	}
-		
 	uint32_t val1 = 0, val2 = 0, val = 0;
-	if(tokens[pos].type != TK_DEREF)
+	if(tokens[pos].type != TK_DEREF && tokens[pos].type != TK_NEGTIVE)
 		val1 = eval(p, pos - 1, success);
 	if(*success == false) 
     return 0;
@@ -288,7 +290,10 @@ uint32_t eval(int p, int q, bool *success)
 			break;
 		case TK_DEREF:
 			val = vaddr_read(val2, 4);
-			break;	
+			break;
+    case TK_NEGTIVE:
+      val = -val2;
+      break;	
 		default:
 			printf("Unknown token type %d: %d %d\n",pos, tokens[pos].type,TK_PLUS);
 			return *success = false;

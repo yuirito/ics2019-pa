@@ -9,7 +9,9 @@
 
 void cpu_exec(uint64_t);
 void isa_reg_display();
-void wp_display();
+void display_wp();
+bool del_wp(int n);
+WP* new_wp(char *s);
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -38,13 +40,15 @@ static int cmd_q(char *args) {
   return -1;
 }
 
+/* PA1 */
 static int cmd_help(char *args);
 static void cmd_err(int err_type,const char *command);
 static int cmd_si(char *args);
 static int cmd_info(char *args);
 static int cmd_x(char *args);
 static int cmd_p(char *args);
-
+static int cmd_w(char *args);
+static int cmd_d(char *args);
 
 static struct {
   char *name;
@@ -55,16 +59,17 @@ static struct {
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
 
+  /* TODO: Add more commands */
   /*PA1.1*/
   { "si", "Usage: si [N]\n Execute the program with N(default: 1) step", cmd_si},
   { "info", "Usage: info [rw]\n"\
   "info r: print the values of all registers\n"\
   "info w: show information about watchpoint", cmd_info},
   { "x", "Usage: x [N] [EXPR]\n" \
-	"print N consecutive 4 bytes starting from address calculated from EXPR", cmd_x },
+	"print N(default:1) consecutive 4 bytes starting from address calculated from EXPR", cmd_x },
   { "p", "Usage: p EXPR\nPrint the value of expression", cmd_p},
-
-  /* TODO: Add more commands */
+  { "w", "Usage: w EXPR\nAdd watchpoint", cmd_w},
+  { "d", "Usage: d N\nDelete No N watchpoint", cmd_d}
 
 };
 
@@ -136,8 +141,8 @@ static int cmd_info(char *args) {
     }
     else{
         if(*arg == 'r') isa_reg_display();
-        //else if(*arg == 'w') wp_display();
-        //else cmd_err(0, "info: unknown argument");
+        else if(*arg == 'w') display_wp();
+        else cmd_err(0, "info: unknown argument");
     }
     return 0;
 
@@ -178,18 +183,51 @@ static int cmd_x(char *args) {
 
 static int cmd_p(char *args) {
     /* extract the first argument */
-
-    char *arg = strtok(NULL, " ");
-    if (arg == NULL) {
+    if (args == NULL) {
         /* no argument given */
         cmd_err(0, "p: no argument given\n");
     }
     else{
         bool success = true;
-        uint32_t result = expr(arg,&success);
+        uint32_t result = expr(args,&success);
         if(success) printf("0x%x(%d)\n",result,result);
         else printf("Invalid expr\n");
 
+    }
+    return 0;
+
+}
+
+static int cmd_w(char *args) {
+    /* extract the first argument */
+
+    char *arg = strtok(NULL, " ");
+    if (arg == NULL) {
+        /* no argument given */
+        cmd_err(1, "w\n");
+    }
+    else{
+        WP *p = new_wp(arg);
+        printf("watchpoint %d : %s\n", p->NO,p->expr);
+    }
+    return 0;
+
+}
+
+static int cmd_d(char *args) {
+    /* extract the first argument */
+
+    char *arg = strtok(NULL, " ");
+    if (arg == NULL) {
+        /* no argument given */
+        cmd_err(1, "d\n");
+    }
+    else{
+        int n = atoi(arg);
+        if( n<0 ){
+          cmd_err(0, "d:N must be in [0,31] \n");
+        }
+        del_wp(n);
     }
     return 0;
 
