@@ -76,10 +76,10 @@ static inline void rtl_is_add_carry(rtlreg_t* dest,
 
 #define make_rtl_setget_eflags(f) \
   static inline void concat(rtl_set_, f) (const rtlreg_t* src) { \
-    TODO(); \
+    reg_f(f) = *src;  \
   } \
   static inline void concat(rtl_get_, f) (rtlreg_t* dest) { \
-    TODO(); \
+    *dest = reg_f(f); \
   }
 
 make_rtl_setget_eflags(CF)

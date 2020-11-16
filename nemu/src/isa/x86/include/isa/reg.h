@@ -33,6 +33,20 @@ typedef struct {
    * in PA2 able to directly access these registers.
    */
   vaddr_t pc;
+  /* PA2.1 */
+  union{
+	  struct{
+		  uint32_t CF:1;
+		  uint32_t :5;
+		  uint32_t ZF:1;
+		  uint32_t SF:1;
+		  uint32_t :1;
+		  uint32_t IF:1;
+		  uint32_t :1;
+		  uint32_t OF:1;
+	  }eflags;
+	  uint32_t eflags_value;
+  };
 
 } CPU_state;
 
@@ -44,6 +58,7 @@ static inline int check_reg_index(int index) {
 #define reg_l(index) (cpu.gpr[check_reg_index(index)]._32)
 #define reg_w(index) (cpu.gpr[check_reg_index(index)]._16)
 #define reg_b(index) (cpu.gpr[check_reg_index(index) & 0x3]._8[index >> 2])
+#define reg_f(flag)	 (cpu.eflags.flag)
 
 static inline const char* reg_name(int index, int width) {
   extern const char* regsl[];
