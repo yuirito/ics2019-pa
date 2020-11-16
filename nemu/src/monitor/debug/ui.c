@@ -150,7 +150,6 @@ static int cmd_info(char *args) {
 
 static int cmd_x(char *args) {
     /* extract the first argument */
-
     char *arg1 = strtok(NULL, " ");
     char *arg2 = strtok(NULL, " ");
     if (arg1 == NULL || arg2 == NULL) {
@@ -178,7 +177,6 @@ static int cmd_x(char *args) {
         }
     }
     return 0;
-
 }
 
 static int cmd_p(char *args) {
