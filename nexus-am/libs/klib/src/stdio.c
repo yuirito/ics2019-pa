@@ -38,23 +38,20 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
       case 'd':{
         int num=va_arg(ap,int);
         int i=0;
-        char c;
-        if(num==0)*str++='0';
+        char nums[20];
+        if(num==0)nums[0]='0';
         else{
           if(num<0){
             *str++='-';
             num=(-num);
           }
           while(num!=0){
-            *str++=num%10+'0';
-            i++;
+            nums[i++]=num%10+'0';
             num/=10;
           }
         }
-        for(int j=1;j<=(i/2);j++){
-          c=*(str-j);
-          *(str-j)=*(str-(i-j+1));
-          *(str-(i-j+1))=c;
+        for(int j=i-1;j>=0;j--){
+          *str++=nums[j];
         }
         break;
       }
