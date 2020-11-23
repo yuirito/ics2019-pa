@@ -53,7 +53,7 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
         }
         for(int j=1;j<=(i/2);j++){
           c=*(str-j);
-          *(str-j)=*(str-(i-j-1));
+          *(str-j)=*(str-(i-j+1));
           *(str-(i-j+1))=c;
         }
         break;
