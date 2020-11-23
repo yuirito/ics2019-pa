@@ -18,40 +18,43 @@ int printf(const char *fmt, ...) {
 
 int vsprintf(char *out, const char *fmt, va_list ap) {
   int length;
-  const char* a;
+  const char* t;
   char *str=out;
-  for(;*fmt;++fmt){
+  for(; *fmt; fmt++){
     if(*fmt!='%'){
       *str++=*fmt;
       continue;
     }
-    ++fmt;
+    fmt++;
     switch(*fmt){
       case 's':{
-        a=va_arg(ap,char*);
-        length=strlen(a);
+        t=va_arg(ap,char*);
+        length=strlen(t);
         for(int i=0;i<length;i++){
-          *str++=*a++;
+          *str++=*t++;
         }
-        continue;
+        break;
       }
       case 'd':{
         int num=va_arg(ap,int);
         int i=0;
-        char nums[20];
-        if(num==0)nums[0]='0';
+        char c;
+        if(num==0)*str++='0';
         else{
           if(num<0){
             *str++='-';
             num=(-num);
           }
           while(num!=0){
-            nums[i++]=num%10+'0';
+            *str++=num%10+'0';
+            i++;
             num/=10;
           }
         }
-        for(int j=i-1;j>=0;j--){
-          *str++=nums[j];
+        for(int j=1;j<=(i/2);j++){
+          c=*(str-j);
+          *(str-j)=*(str-(i-j-1));
+          *(str-(i-j+1))=c;
         }
         break;
       }
