@@ -149,7 +149,7 @@ static OpcodeEntry opcode_table [512] = {
   /* 0x6c */	EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0x70 */	EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0x74 */	EMPTY, EMPTY, EMPTY, EMPTY,
-  /* 0x78 */	EMPTY, EMPTY, EMPTY, EMPTY,
+  /* 0x78 */	IDEXW(J,jcc,1), EMPTY, EMPTY, EMPTY,
   /* 0x7c */	EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0x80 */	EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0x84 */	EMPTY, IDEX(J,jcc), EMPTY, EMPTY,
