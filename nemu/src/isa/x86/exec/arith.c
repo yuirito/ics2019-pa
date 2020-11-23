@@ -1,7 +1,7 @@
 #include "cpu/exec.h"
 
+/* PA2.1 PA2.2 */
 make_EHelper(add) {
-  /* PA2.1 */
   rtl_add(&s0,&id_dest->val,&id_src->val);
   operand_write(id_dest,&s0);
   // update ZF SF
@@ -17,7 +17,6 @@ make_EHelper(add) {
 }
 
 make_EHelper(sub) {
-  /* PA2.1 */
   rtl_sub(&s0,&id_dest->val,&id_src->val);
   operand_write(id_dest,&s0);
   // update ZF SF
@@ -33,7 +32,6 @@ make_EHelper(sub) {
 }
 
 make_EHelper(cmp) {
-  /* PA2.2 */
   rtl_sub(&s0,&id_dest->val,&id_src->val);
   // update ZF SF
   rtl_update_ZFSF(&s0,id_dest->width);
@@ -48,7 +46,6 @@ make_EHelper(cmp) {
 }
 
 make_EHelper(inc) {
-  /* PA2.2 */
   s0=1;
   rtl_add(&s1,&id_dest->val,&s0);
   operand_write(id_dest,&s1);
@@ -76,7 +73,18 @@ make_EHelper(dec) {
 }
 
 make_EHelper(neg) {
-  TODO();
+  s0=0;
+  rtl_sub(&s1,&s0,&id_dest->val);
+  operand_write(id_dest,&s1);
+  // update ZF SF
+  rtl_update_ZFSF(&s1,id_dest->width);
+  // update OF
+  rtl_is_sub_overflow(&s1,&s1,&s0,&id_dest->val,id_dest->width);
+  rtl_set_OF(&s1);
+  
+  if(id_dest->val!=0)s1=1;
+  else s1=0;
+  rtl_set_CF(&s1);
 
   print_asm_template1(neg);
 }
