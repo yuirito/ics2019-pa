@@ -42,10 +42,12 @@ make_EHelper(leave) {
 
 make_EHelper(cltd) {
   if (decinfo.isa.is_operand_size_16) {
-    TODO();
+    rtl_sext(&s0, &reg_l(R_EAX), 2);	// sign extended
+    rtl_sari(&s0, &s0, 16);
+    rtl_sr(R_DX, &s0, 2);
   }
   else {
-    TODO();
+    rtl_sari(&reg_l(R_EDX), &reg_l(R_EAX), 32);
   }
 
   print_asm(decinfo.isa.is_operand_size_16 ? "cwtl" : "cltd");
