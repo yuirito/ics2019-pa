@@ -59,7 +59,7 @@ void difftest_init(void) {
     close(STDIN_FILENO);
     execlp(ISA_QEMU_BIN, ISA_QEMU_BIN, ISA_QEMU_ARGS "-S", "-s", "-nographic", NULL);
     perror("exec");
-    //assert(0);
+    assert(0);
   }
   else {
     // father
