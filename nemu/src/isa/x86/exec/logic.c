@@ -1,8 +1,8 @@
 #include "cpu/exec.h"
 #include "cc.h"
-
+/* PA2 */
 make_EHelper(test) {
-  /* PA2.2 */
+  
   rtl_and(&s0,&id_dest->val,&id_src->val);
   
   rtl_update_ZFSF(&s0,id_dest->width);
@@ -17,7 +17,7 @@ make_EHelper(test) {
 }
 
 make_EHelper(and) {
-  /* PA2.1 */
+  
   rtl_and(&s0, &id_dest->val, &id_src->val);
   operand_write(id_dest, &s0);
   rtl_update_ZFSF(&s0, id_dest -> width);
@@ -31,7 +31,7 @@ make_EHelper(and) {
 }
 
 make_EHelper(xor) {
-  /* PA2.1 */
+  
   rtl_xor(&s0, &id_dest->val, &id_src->val);
   operand_write(id_dest, &s0);
   rtl_update_ZFSF(&s0, id_dest -> width);
@@ -45,7 +45,7 @@ make_EHelper(xor) {
 }
 
 make_EHelper(or) {
-  /* PA2.1 */
+  
   rtl_or(&s0, &id_dest->val, &id_src->val);
   operand_write(id_dest, &s0);
   rtl_update_ZFSF(&s0, id_dest -> width);
@@ -61,7 +61,7 @@ make_EHelper(or) {
 make_EHelper(sar) {
   
   // unnecessary to update CF and OF in NEMU
-  /* PA2.2 */
+  
   rtl_sar(&s0, &id_dest->val, &id_src->val);
   operand_write(id_dest, &s0);
   rtl_update_ZFSF(&s0, id_dest->width);
@@ -72,7 +72,7 @@ make_EHelper(sar) {
 make_EHelper(shl) {
   //TODO();
   // unnecessary to update CF and OF in NEMU
-  /* PA2.2 */
+  
   rtl_shl(&s0, &id_dest->val, &id_src->val);
   operand_write(id_dest, &s0);
   rtl_update_ZFSF(&s0, id_dest->width);
@@ -83,7 +83,7 @@ make_EHelper(shl) {
 make_EHelper(shr) {
   //TODO();
   // unnecessary to update CF and OF in NEMU
-  /* PA2.2 */
+  
   rtl_shr(&s0, &id_dest->val, &id_src->val);
   operand_write(id_dest, &s0);
   rtl_update_ZFSF(&s0, id_dest->width);
@@ -100,9 +100,29 @@ make_EHelper(setcc) {
 }
 
 make_EHelper(not) {
-  /* PA2.2 */
+  
   rtl_not(&s0,&id_dest->val);
   operand_write(id_dest,&s0);
 
   print_asm_template1(not);
+}
+
+/* PA2.3 */
+make_EHelper(rol) {
+	s0 = id_dest -> val;
+	int i;
+	for(i = 0; i < id_src -> val; ++ i)	{
+		rtl_msb(&s1, &s0, id_dest->width);
+		s0 = s0 << 1;
+		s0 |= s1;
+		rtl_set_CF(&s1);	
+	}
+  operand_write(id_dest, &s0);
+	if(id_src -> val == 1){
+    rtl_msb(&s0, &s0, id_dest->width);
+    s0 ^= s1;
+    rtl_set_CF(&s0);
+  }
+	
+	print_asm_template2(rol);	
 }
