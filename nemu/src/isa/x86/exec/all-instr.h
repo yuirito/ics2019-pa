@@ -45,3 +45,4 @@ make_EHelper(sbb);
 make_EHelper(neg);
 make_EHelper(out);
 make_EHelper(in);
+make_EHelper(div);
