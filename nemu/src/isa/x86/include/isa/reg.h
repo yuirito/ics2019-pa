@@ -47,6 +47,11 @@ typedef struct {
 	  }eflags;
 	  uint32_t eflags_value;
   };
+  /* PA3 */
+  struct{
+    uint16_t limit;
+    uint32_t base;
+  }idtr;
 
 } CPU_state;
 
