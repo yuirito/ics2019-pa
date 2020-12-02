@@ -50,3 +50,4 @@ make_EHelper(cwtl);
 make_EHelper(imul3);
 make_EHelper(rol);
 make_EHelper(lidt);
+make_EHelper(int);

@@ -1,7 +1,7 @@
 #include "cpu/exec.h"
 /* PA3 */
 make_EHelper(lidt) {
-  
+
   cpu.idtr.limit = vaddr_read(id_dest->addr,2);
   if(decinfo.isa.is_operand_size_16){
     cpu.idtr.base = vaddr_read(id_dest->addr+2,4) && 0x00ffffff;
@@ -27,8 +27,8 @@ make_EHelper(mov_cr2r) {
 }
 
 make_EHelper(int) {
-  TODO();
-
+  
+  raise_intr(id_dest->val,decinfo.seq_pc);
   print_asm("int %s", id_dest->str);
 
   difftest_skip_dut(1, 2);
