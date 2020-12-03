@@ -19,7 +19,16 @@ make_EHelper(pop) {
 }
 
 make_EHelper(pusha) {
-  TODO();
+  
+  s0 = reg_l(R_ESP);
+  rtl_push(&reg_l(R_EAX));
+  rtl_push(&reg_l(R_ECX));
+  rtl_push(&reg_l(R_EDX));	
+  rtl_push(&reg_l(R_EBX));
+  rtl_push(&s0);
+  rtl_push(&reg_l(R_EBP));
+  rtl_push(&reg_l(R_ESI));
+  rtl_push(&reg_l(R_EDI));
 
   print_asm("pusha");
 }
