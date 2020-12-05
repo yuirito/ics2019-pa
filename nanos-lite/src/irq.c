@@ -2,6 +2,9 @@
 
 static _Context* do_event(_Event e, _Context* c) {
   switch (e.event) {
+    case _EVENT_IRQ_TIMER: Log("receive intr");break;
+    case _EVENT_YIELD: Log("yield");break;
+    case _EVENT_SYSCALL: Log("syscall");break;
     default: panic("Unhandled event ID = %d", e.event);
   }
 
