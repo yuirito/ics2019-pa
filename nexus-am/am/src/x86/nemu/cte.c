@@ -18,7 +18,6 @@ _Context* __am_irq_handle(_Context *c) {
       case 0x81:ev.event = _EVENT_YIELD;break;
       default: ev.event = _EVENT_ERROR; break;
     }
-
     next = user_handler(ev, c);
     if (next == NULL) {
       next = c;
