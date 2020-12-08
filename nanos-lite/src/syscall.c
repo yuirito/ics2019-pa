@@ -13,7 +13,7 @@ _Context* do_syscall(_Context *c) {
     case SYS_yield: result=sys_yield();break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
-  c->eax=result;
+  c->GPRx=result;
   return NULL;
 }
 
