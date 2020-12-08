@@ -18,17 +18,12 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   
   ramdisk_read(&elfheader,offset,len);
   offset = elfheader.e_phoff;
-  printf("num=%d\n",elfheader.e_phnum);
   for (uint16_t i=0; i<elfheader.e_phnum; i++){
-    
-    printf("i=%d:\n",i);
+
     ramdisk_read(&programheader,offset,(size_t)sizeof(Elf_Phdr));
     offset+=sizeof(Elf_Phdr);
     if(programheader.p_type == PT_LOAD){
       uint8_t buf[programheader.p_filesz];
-      if(programheader.p_offset+programheader.p_filesz>get_ramdisk_size()){
-        printf("%d,%d",i,programheader.p_filesz);
-      }
       ramdisk_read(&buf,programheader.p_offset,programheader.p_filesz);
       memcpy((void*)programheader.p_vaddr,&buf,programheader.p_filesz);
       memset((void*)(programheader.p_vaddr+programheader.p_filesz),0,(programheader.p_memsz-programheader.p_filesz));
