@@ -98,3 +98,13 @@ make_EHelper(lea) {
   operand_write(id_dest, &id_src->addr);
   print_asm_template2(lea);
 }
+
+make_EHelper(movsb){
+  
+  s0 = reg_l(R_ESI);
+	rtl_lm(&s0, &s0, 1);
+	rtl_sm(&reg_l(R_EDI), &s0, 1);
+	reg_l(R_ESI) += 1;
+	reg_l(R_EDI) += 1;
+
+}
