@@ -5,6 +5,7 @@
 int sys_yield();
 void sys_exit(uintptr_t arg);
 size_t sys_write(int fd,const void *buf,size_t count);
+int sys_brk(uintptr_t increment);
 
 _Context* do_syscall(_Context *c) {
   uintptr_t a[4];
@@ -17,6 +18,7 @@ _Context* do_syscall(_Context *c) {
     case SYS_exit: sys_exit(a[1]);break;
     case SYS_yield: result=sys_yield();break;
     case SYS_write: result = sys_write(a[1],(void*)a[2],a[3]);break;
+    case SYS_brk: result=sys_brk(a[1]);break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
   c->GPRx=result;
@@ -39,4 +41,8 @@ size_t sys_write(int fd,const void *buf,size_t count){
     }
   }
   return count;
+}
+
+int sys_brk(uintptr_t increment){
+  return 0;
 }
