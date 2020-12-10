@@ -100,7 +100,7 @@ size_t fs_write(int fd, const void *buf, size_t len){
     break;
   }
   default: 
-    ramdisk_write(buf,file_table[fd].disk_offset+file_table[fd].open_offset,w_len);
+    length=ramdisk_write(buf,file_table[fd].disk_offset+file_table[fd].open_offset,w_len);
     file_table[fd].open_offset += length;
     break;
   }
