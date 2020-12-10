@@ -16,20 +16,19 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   int fd = fs_open(filename,0,0);
   assert(fd!=-1);
   fs_read(fd,&elfheader,sizeof(Elf_Ehdr));
-  size_t offset = 0;
-  size_t p_offset = 0;
-  offset = elfheader.e_phoff+fs_disk_offset(fd);
+  fs_lseek(fd,elfheader.e_phoff,SEEK_SET);
+  size_t open_offset;
+
   for (uint16_t i=0; i<elfheader.e_phnum; i++){
 
-    ramdisk_read(&programheader,offset,(size_t)sizeof(Elf_Phdr));
-    offset+=sizeof(Elf_Phdr);
+    fs_read(fd,&programheader,sizeof(Elf_Phdr));
+    open_offset = fs_open_offset(fd);
     if(programheader.p_type == PT_LOAD){
-      uint8_t buf[programheader.p_filesz];
-      p_offset = programheader.p_offset + fs_disk_offset(fd);
-      ramdisk_read(&buf,p_offset,programheader.p_filesz);
-      memcpy((void*)programheader.p_vaddr,&buf,programheader.p_filesz);
+      fs_lseek(fd,programheader.p_offset,SEEK_SET);
+      fs_read(fd,(void *)programheader.p_vaddr,programheader.p_filesz);
       memset((void*)(programheader.p_vaddr+programheader.p_filesz),0,(programheader.p_memsz-programheader.p_filesz));
     }
+    fs_lseek(fd,open_offset,SEEK_SET);
 
   }
   fs_close(fd);
