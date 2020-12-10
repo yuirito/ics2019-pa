@@ -76,3 +76,11 @@ size_t fs_read(int fd, void *buf, size_t len){
 int fs_close(int fd){
   return 0;
 }
+
+size_t fs_disk_offset(int fd){
+  return file_table[fd].disk_offset;
+}
+
+size_t fs_open_offset(int fd){
+  return file_table[fd].open_offset;
+}

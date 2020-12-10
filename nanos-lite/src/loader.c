@@ -17,14 +17,15 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   fs_read(fd,&elfheader,sizeof(Elf_Ehdr));
   size_t offset = 0;
   size_t p_offset = 0;
-  offset = elfheader.e_phoff;
+  offset = elfheader.e_phoff+fs_disk_offset(fd);
   for (uint16_t i=0; i<elfheader.e_phnum; i++){
 
     ramdisk_read(&programheader,offset,(size_t)sizeof(Elf_Phdr));
     offset+=sizeof(Elf_Phdr);
     if(programheader.p_type == PT_LOAD){
       uint8_t buf[programheader.p_filesz];
-      ramdisk_read(&buf,programheader.p_offset,programheader.p_filesz);
+      p_offset = programheader.p_offset + fs_disk_offset(fd);
+      ramdisk_read(&buf,p_offset,programheader.p_filesz);
       memcpy((void*)programheader.p_vaddr,&buf,programheader.p_filesz);
       memset((void*)(programheader.p_vaddr+programheader.p_filesz),0,(programheader.p_memsz-programheader.p_filesz));
     }
