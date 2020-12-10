@@ -104,8 +104,7 @@ size_t fs_write(int fd, const void *buf, size_t len){
     file_table[fd].open_offset += length;
     break;
   }
-	
-	file_table[fd].open_offset += length;
+
 	return length;
 }
 
