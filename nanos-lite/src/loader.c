@@ -12,11 +12,11 @@
 static uintptr_t loader(PCB *pcb, const char *filename) {
   Elf_Ehdr elfheader;
   Elf_Phdr programheader;
+  int fd = fs_open(filename,0,0);
+  assert(fd!=-1);
+  fs_read(fd,&elfheader,sizeof(Elf_Ehdr));
   size_t offset = 0;
   size_t p_offset = 0;
-  size_t len = (size_t)sizeof(Elf_Ehdr);
-  
-  ramdisk_read(&elfheader,offset,len);
   offset = elfheader.e_phoff;
   for (uint16_t i=0; i<elfheader.e_phnum; i++){
 
@@ -30,6 +30,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     }
 
   }
+  fs_close(fd);
   return elfheader.e_entry;
 }
 
