@@ -3,6 +3,7 @@
 typedef size_t (*ReadFn) (void *buf, size_t offset, size_t len);
 typedef size_t (*WriteFn) (const void *buf, size_t offset, size_t len);
 size_t serial_write(const void *buf, size_t offset, size_t len);
+size_t events_read(void *buf, size_t offset, size_t len);
 
 typedef struct {
   char *name;
@@ -30,6 +31,7 @@ static Finfo file_table[] __attribute__((used)) = {
   {"stdin", 0, 0, invalid_read, invalid_write},
   {"stdout", 0, 0, invalid_read, serial_write},
   {"stderr", 0, 0, invalid_read, serial_write},
+  {"/dev/events", 0, 0, 0, events_read, invalid_write},
 #include "files.h"
 };
 
@@ -61,16 +63,12 @@ size_t fs_read(int fd, void *buf, size_t len){
 	assert(r_len >= 0);
 
 	size_t length = 0;
-	switch (fd)
-  {
-  case FD_STDIN:
-  case FD_STDOUT:
-  case FD_STDERR: break;
-  default: 
-    length = ramdisk_read(buf,file_table[fd].disk_offset+file_table[fd].open_offset,r_len);
-    file_table[fd].open_offset += length;
-    break;
-  }
+	if(file_table[fd].read == NULL) {
+		length = ramdisk_read(buf, file_table[fd].disk_offset + file_table[fd].open_offset, r_len);
+	}else{
+		length = file_table[fd].read(buf, file_table[fd].disk_offset + file_table[fd].open_offset, r_len);
+	}
+  file_table[fd].open_offset += length;
 	return length;
 }
 
