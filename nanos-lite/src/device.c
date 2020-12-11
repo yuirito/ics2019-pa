@@ -33,8 +33,6 @@ size_t events_read(void *buf, size_t offset, size_t len) {
   }
   else {
     int time =uptime();
-    
-    printf("time=%d\n",time);
     sprintf(buf, "t %d\n", time);
   }
   return strlen(buf);
