@@ -4,6 +4,9 @@ typedef size_t (*ReadFn) (void *buf, size_t offset, size_t len);
 typedef size_t (*WriteFn) (const void *buf, size_t offset, size_t len);
 size_t serial_write(const void *buf, size_t offset, size_t len);
 size_t events_read(void *buf, size_t offset, size_t len);
+size_t dispinfo_read(void *buf, size_t offset, size_t len);
+size_t fb_write(const void *buf, size_t offset, size_t len);
+size_t fbsync_write(const void *buf, size_t offset, size_t len);
 
 typedef struct {
   char *name;
@@ -31,7 +34,10 @@ static Finfo file_table[] __attribute__((used)) = {
   {"stdin", 0, 0, 0, invalid_read, invalid_write},
   {"stdout", 0, 0, 0, invalid_read, serial_write},
   {"stderr", 0, 0, 0, invalid_read, serial_write},
+  {"/dev/fb", 0, 0, 0, invalid_read, fb_write},
   {"/dev/events", 0, 0, 0, events_read, invalid_write},
+  {"/dev/fbsync", 0, 0, 0, invalid_read,fbsync_write},
+  {"/proc/dispinfo", 128, 0, 0, dispinfo_read,invalid_write},
 #include "files.h"
 };
 
@@ -39,6 +45,7 @@ static Finfo file_table[] __attribute__((used)) = {
 
 void init_fs() {
   // TODO: initialize the size of /dev/fb
+  file_table[FD_FB].size = (screen_width()*screen_height())<<2;
 }
 
 int fs_open(const char *pathname, int flags, int mode){
