@@ -1,6 +1,6 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
-volatile static int dummy;
+
 //#define DEBUG
 //#define DIFF_TEST
 
