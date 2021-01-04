@@ -50,6 +50,12 @@ static int cmd_p(char *args);
 static int cmd_w(char *args);
 static int cmd_d(char *args);
 
+/* PA3.3 */
+static int cmd_detach(char * args);
+static int cmd_attach(char * args);
+void difftest_detach();
+void difftest_attach();
+
 static struct {
   char *name;
   char *description;
@@ -69,7 +75,10 @@ static struct {
 	"print N(default:1) consecutive 4 bytes starting from address calculated from EXPR", cmd_x },
   { "p", "Usage: p EXPR\nPrint the value of expression", cmd_p},
   { "w", "Usage: w EXPR\nAdd watchpoint", cmd_w},
-  { "d", "Usage: d N\nDelete No N watchpoint", cmd_d}
+  { "d", "Usage: d N\nDelete No N watchpoint", cmd_d},
+  /* PA3.3 */
+  { "detach", "'detach' Quit Diff-Test mode", cmd_detach },
+  { "attach", "'attach' Open Diff-Test mode", cmd_attach }
 
 };
 
@@ -269,4 +278,14 @@ void ui_mainloop(int is_batch_mode) {
 
     if (i == NR_CMD) { printf("Unknown command '%s'\n", cmd); }
   }
+}
+
+static int cmd_detach(char * args) {
+  difftest_detach();
+  return 0;
+}
+
+static int cmd_attach(char *args) {
+  difftest_attach();
+  return 0;
 }
