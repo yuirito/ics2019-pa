@@ -53,8 +53,12 @@ static int cmd_d(char *args);
 /* PA3.3 */
 static int cmd_detach(char * args);
 static int cmd_attach(char * args);
+static int cmd_save(char * args);
+static int cmd_load(char * args);
 void difftest_detach();
 void difftest_attach();
+bool isa_save(const FILE *fp);
+bool isa_load(FILE *fp);
 
 static struct {
   char *name;
@@ -77,9 +81,10 @@ static struct {
   { "w", "Usage: w EXPR\nAdd watchpoint", cmd_w},
   { "d", "Usage: d N\nDelete No N watchpoint", cmd_d},
   /* PA3.3 */
-  { "detach", "'detach' Quit Diff-Test mode", cmd_detach },
-  { "attach", "'attach' Open Diff-Test mode", cmd_attach }
-
+  { "detach", "Usage:detach \nQuit Diff-Test mode", cmd_detach },
+  { "attach", "Usage:attach \nOpen Diff-Test mode", cmd_attach },
+  { "save", "Usage:save [path] \nSave current state to path", cmd_save },
+  { "load", "Usage:load [path] \nLoad state from path", cmd_load }
 };
 
 #define NR_CMD (sizeof(cmd_table) / sizeof(cmd_table[0]))
@@ -287,5 +292,48 @@ static int cmd_detach(char * args) {
 
 static int cmd_attach(char *args) {
   difftest_attach();
+  return 0;
+}
+
+static int cmd_save(char * args) {
+  if (args == NULL) {
+    printf("please input parameter [path].\n");
+  }
+  else {
+    FILE *fp = fopen(args, "w");
+    if (fp == NULL) {
+      printf("file %s failed to open.\n", args);
+    }
+    else if (isa_save(fp) != true) {
+      printf("file %s failed to save.\n", args);
+      fclose(fp);
+    }
+    else {
+      printf("save at : %s\n", args);
+      fclose(fp);
+    }
+  }
+  return 0;
+}
+
+static int cmd_load(char *args) {
+  if (args == NULL) {
+    printf("please input parameter [path].\n");
+  }
+  else {
+    FILE *fp = fopen(args, "r");
+    if (fp == NULL) {
+      printf("file %s failed to open.\n", args);
+    }
+    else if (isa_load(fp) != true) {
+      printf("file %s failed to load.\n", args);
+      fclose(fp);
+    }
+    else {
+      printf("load from : %s\n", args);
+      fclose(fp);
+      difftest_attach();
+    }
+  }
   return 0;
 }
